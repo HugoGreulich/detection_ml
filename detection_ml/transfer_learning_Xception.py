@@ -2,6 +2,7 @@ import numpy as np
 import os
 from sklearn.model_selection import train_test_split
 import overfit
+from matplotlib import pyplot as plt
 from keras.applications import Xception
 from keras.models import Sequential
 from keras.layers import Dense, GlobalAveragePooling2D, Dropout
@@ -50,8 +51,11 @@ num_samples = len(y_test)
 num_soluble = np.sum(y_test == 0)
 num_insoluble = np.sum(y_test == 1)
 
+num_samples_train = len(y_train)
+num_soluble_train = np.sum(y_train == 0)
+num_insoluble_train = np.sum(y_train == 1)
 # Calculate the baseline accuracy
-baseline_accuracy = max(num_soluble, num_insoluble) / num_samples
+baseline_accuracy = max(num_soluble_train, num_insoluble_train) / num_samples_train
 
 print("Baseline Accuracy:", baseline_accuracy)
 
@@ -77,7 +81,7 @@ model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accur
 early_stopping = EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
 
 # Train the model
-history = model.fit(X_train, y_train, epochs=100, batch_size=32, validation_data=(X_test, y_test))
+history = model.fit(X_train, y_train, epochs=100, batch_size=64, validation_data=(X_test, y_test))
 
 # Evaluate the model
 test_loss, test_accuracy = model.evaluate(X_test, y_test)
@@ -87,4 +91,4 @@ print("Test Accuracy:", test_accuracy)
 # Plot training history
 overfit.plot_training_history(history)
 
-model.save("detection_Xception.h5")
+model.save("detection_Xception_e_100_bs_64.keras")
